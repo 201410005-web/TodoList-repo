@@ -1,0 +1,130 @@
+body {
+  margin: 0;
+  padding: 0;
+  font-family: Arial, sans-serif;
+  background-color: #f4f6f9;
+  color: #333333;            
+  display: flex;
+  justify-content: center;
+}
+
+.todo-container {
+  width: 100%;
+  max-width: 600px;
+  margin: 30px auto;
+  padding: 20px;
+  background-color: #ffffff; 
+  border: 1px solid #cccccc;
+  border-radius: 4px;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+.main-title {
+  text-align: center;
+  color: #222222; /* Color */
+  margin-bottom: 20px;
+  font-size: 2.2rem;
+  font-weight: bold;
+}
+
+
+.todo-form {
+  display: flex;
+  gap: 8px;
+  margin-bottom: 20px;
+}
+
+.todo-form input {
+  flex: 1;
+  padding: 8px;
+  border: 1px solid #999999;
+  border-radius: 4px;
+  font-size: 1rem;
+  background-color: #ffffff; 
+  color: #333333;       
+}
+
+.todo-form select {
+  padding: 8px;
+  border: 1px solid #999999;
+  border-radius: 4px;
+  background-color: #ffffff ; /* F */
+  color: #333333;            /* */
+  font-size: 1rem;
+}
+
+.todo-form button {
+  background-color: #0056b3; 
+  color: white;
+  border: none;
+  padding: 8px 16px;
+  border-radius: 4px;
+  cursor: pointer;
+  font-weight: bold;
+}
+
+.task-item {
+  background-color: #fafafa;
+  border: 1px solid #dddddd;
+  border-left: 4px solid #888888; 
+  padding: 12px;
+  border-radius: 4px;
+  margin-bottom: 10px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.task-item.completada {
+  border-left-color: #28a745;
+  background-color: #f0fdf4;
+}
+
+.task-item.completada .task-title {
+  text-decoration: line-through;
+  color: #777777;
+}
+
+.task-title {
+  font-size: 1rem;
+  font-weight: bold;
+  margin-bottom: 6px;
+}
+
+.task-metadata {
+  display: flex;
+  gap: 15px;
+  font-size: 0.8rem;
+  color: #555555;
+}
+
+.task-actions {
+  display: flex;
+  gap: 5px;
+}
+
+.btn-status {
+  background-color: #e2e8f0;
+  color: #333333;
+  border: 1px solid #cbd5e1;
+  padding: 5px 10px;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 0.8rem;
+}
+
+.btn-delete {
+  background-color: #dc3545; 
+  color: white;
+  border: none;
+  padding: 5px 10px;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 0.8rem;
+}
+
+.no-tasks {
+  text-align: center;
+  color: #888888;
+  font-style: italic;
+}
