@@ -151,7 +151,7 @@ app.post('/login', (req, res) => {
 
 
 
-// GET TASKS
+// GET 
 
 
 app.get('/tasks', (req, res) => {
@@ -282,7 +282,7 @@ app.put('/tasks/:id', (req, res) => {
 
 
 
-// PATCH TASK
+// PATCH 
 
 
 app.patch('/tasks/:id', (req, res) => {
