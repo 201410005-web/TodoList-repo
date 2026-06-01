@@ -1,427 +1,144 @@
-import { useState, useEffect } from 'react';
-import './App.css';
-
-function App() {
-
-  const [loggedIn, setLoggedIn] = useState(false);
-
-  const [username, setUsername] = useState('');
-  const [password, setPassword] = useState('');
-
-  const [tasks, setTasks] = useState([]);
-  const [title, setTitle] = useState('');
-  const [priority, setPriority] = useState('media');
-
-  const API_URL = 'http://localhost:3000/tasks';
-
-  const fetchTasks = async () => {
-
-    try {
-
-      const response = await fetch(API_URL);
-
-      const data = await response.json();
-
-      setTasks(data);
-
-    } catch (error) {
-
-      console.error(error);
-
-    }
-
-  };
-
-  useEffect(() => {
-
-    if (loggedIn) {
-
-      fetchTasks();
-
-    }
-
-  }, [loggedIn]);
-
-
-
-  const handleRegister = async () => {
-
-    try {
-
-      const response = await fetch(
-        'http://localhost:3000/register',
-        {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json'
-          },
-          body: JSON.stringify({
-            username,
-            password
-          })
-        }
-      );
-
-      const data = await response.json();
-
-      alert(data.message || data.error);
-
-    } catch (error) {
-
-      console.error(error);
-
-    }
-
-  };
-
-
-
-  const handleLogin = async () => {
-
-    try {
-
-      const response = await fetch(
-        'http://localhost:3000/login',
-        {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json'
-          },
-          body: JSON.stringify({
-            username,
-            password
-          })
-        }
-      );
-
-      const data = await response.json();
-
-      if (response.status === 200) {
-
-        setLoggedIn(true);
-
-      } else {
-
-        alert(data.error);
-
-      }
-
-    } catch (error) {
-
-      console.error(error);
-
-    }
-
-  };
-
-
-
-  const handleSubmit = async (e) => {
-
-    e.preventDefault();
-
-    if (!title.trim()) return;
-
-    try {
-
-      const response = await fetch(
-        API_URL,
-        {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json'
-          },
-          body: JSON.stringify({
-            title,
-            status: 'pendiente',
-            priority
-          })
-        }
-      );
-
-      if (response.status === 201) {
-
-        setTitle('');
-
-        setPriority('media');
-
-        fetchTasks();
-
-      }
-
-    } catch (error) {
-
-      console.error(error);
-
-    }
-
-  };
-
-
-
-  const handleToggleStatus = async (
-    id,
-    currentStatus
-  ) => {
-
-    const nuevoStatus =
-      currentStatus === 'pendiente'
-        ? 'completada'
-        : 'pendiente';
-
-    try {
-
-      const response = await fetch(
-        `${API_URL}/${id}`,
-        {
-          method: 'PATCH',
-          headers: {
-            'Content-Type': 'application/json'
-          },
-          body: JSON.stringify({
-            status: nuevoStatus
-          })
-        }
-      );
-
-      if (response.status === 200) {
-
-        fetchTasks();
-
-      }
-
-    } catch (error) {
-
-      console.error(error);
-
-    }
-
-  };
-
-
-
-  const handleDelete = async (id) => {
-
-    try {
-
-      const response = await fetch(
-        `${API_URL}/${id}`,
-        {
-          method: 'DELETE'
-        }
-      );
-
-      if (response.status === 200) {
-
-        fetchTasks();
-
-      }
-
-    } catch (error) {
-
-      console.error(error);
-
-    }
-
-  };
-
-
-
-  if (!loggedIn) {
-
-    return (
-
-      <div className="todo-container">
-
-        <h1 className="main-title">
-          To Do List Login
-        </h1>
-
-        <div
-          style={{
-            display: 'flex',
-            flexDirection: 'column',
-            gap: '10px'
-          }}
-        >
-
-          <input
-            type="text"
-            placeholder="Usuario"
-            value={username}
-            onChange={(e) =>
-              setUsername(e.target.value)
-            }
-          />
-
-          <input
-            type="password"
-            placeholder="Contraseña"
-            value={password}
-            onChange={(e) =>
-              setPassword(e.target.value)
-            }
-          />
-
-          <button
-            className="btn-status"
-            onClick={handleLogin}
-          >
-            Iniciar Sesión
-          </button>
-
-          <button
-            className="btn-delete"
-            onClick={handleRegister}
-          >
-            Registrarse
-          </button>
-
-        </div>
-
-      </div>
-
-    );
-
-  }
-
-
-
-  return (
-
-    <div className="todo-container">
-
-      <h1 className="main-title">
-        To Do List
-      </h1>
-
-      <form
-        onSubmit={handleSubmit}
-        className="todo-form"
-      >
-
-        <input
-          type="text"
-          placeholder="¿Alguna tarea pendiente?"
-          value={title}
-          onChange={(e) =>
-            setTitle(e.target.value)
-          }
-          required
-        />
-
-        <select
-          value={priority}
-          onChange={(e) =>
-            setPriority(e.target.value)
-          }
-        >
-
-          <option value="baja">
-            Baja
-          </option>
-
-          <option value="media">
-            Media
-          </option>
-
-          <option value="alta">
-            Alta
-          </option>
-
-        </select>
-
-        <button type="submit">
-          Agregar
-        </button>
-
-      </form>
-
-      <div className="tasks-list">
-
-        {tasks.length === 0 ? (
-
-          <p className="no-tasks">
-            No hay tareas registradas.
-          </p>
-
-        ) : (
-
-          tasks.map((task) => (
-
-            <div
-              key={task.id}
-              className={`task-item ${task.status}`}
-            >
-
-              <div className="task-info">
-
-                <span className="task-title">
-                  {task.title}
-                </span>
-
-                <div className="task-metadata">
-
-                  <span>
-                    Prioridad: {task.priority}
-                  </span>
-
-                  <span>
-                    Estado: {task.status}
-                  </span>
-
-                  <span>
-                    Creado:
-                    {' '}
-                    {new Date(
-                      task.createdAt
-                    ).toLocaleDateString()}
-                  </span>
-
-                </div>
-
-              </div>
-
-              <div className="task-actions">
-
-                <button
-                  className="btn-status"
-                  onClick={() =>
-                    handleToggleStatus(
-                      task.id,
-                      task.status
-                    )
-                  }
-                >
-                  {task.status === 'pendiente'
-                    ? 'Completar'
-                    : 'Reabrir'}
-                </button>
-
-                <button
-                  className="btn-delete"
-                  onClick={() =>
-                    handleDelete(task.id)
-                  }
-                >
-                  Eliminar
-                </button>
-
-              </div>
-
-            </div>
-
-          ))
-
-        )}
-
-      </div>
-
-    </div>
-
-  );
-
+body {
+  margin: 0;
+  padding: 0;
+  font-family: Arial, sans-serif;
+  background-color: #f4f6f9;
+  color: #333333;
+  display: flex;
+  justify-content: center;
 }
 
-export default App;
+.todo-container {
+  width: 100%;
+  max-width: 600px;
+  margin: 30px auto;
+  padding: 20px;
+  background-color: #ffffff;
+  border: 1px solid #cccccc;
+  border-radius: 4px;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+.main-title {
+  text-align: center;
+  color: #222222;
+  margin-bottom: 20px;
+  font-size: 2.2rem;
+  font-weight: bold;
+}
+
+.todo-form {
+  display: flex;
+  gap: 8px;
+  margin-bottom: 20px;
+}
+
+.todo-form input {
+  flex: 1;
+  padding: 8px;
+  border: 1px solid #999999;
+  border-radius: 4px;
+  font-size: 1rem;
+  background-color: #ffffff;
+  color: #333333;
+}
+
+.todo-form select {
+  padding: 8px;
+  border: 1px solid #999999;
+  border-radius: 4px;
+  background-color: #ffffff;
+  color: #333333;
+  font-size: 1rem;
+}
+
+.todo-form button {
+  background-color: #0056b3;
+  color: white;
+  border: none;
+  padding: 8px 16px;
+  border-radius: 4px;
+  cursor: pointer;
+  font-weight: bold;
+}
+
+.task-item {
+  background-color: #fafafa;
+  border: 1px solid #dddddd;
+  border-left: 4px solid #888888;
+  padding: 12px;
+  border-radius: 4px;
+  margin-bottom: 10px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.task-item.completada {
+  border-left-color: #28a745;
+  background-color: #f0fdf4;
+}
+
+.task-item.completada .task-title {
+  text-decoration: line-through;
+  color: #777777;
+}
+
+.task-title {
+  font-size: 1rem;
+  font-weight: bold;
+  margin-bottom: 6px;
+}
+
+.task-metadata {
+  display: flex;
+  gap: 15px;
+  font-size: 0.8rem;
+  color: #555555;
+}
+
+.task-actions {
+  display: flex;
+  gap: 5px;
+}
+
+.btn-status {
+  background-color: #0056b3;
+  color: white;
+  border: none;
+  padding: 8px 12px;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+.btn-delete {
+  background-color: #dc3545;
+  color: white;
+  border: none;
+  padding: 8px 12px;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+.no-tasks {
+  text-align: center;
+  color: #888888;
+  font-style: italic;
+}
+
+/* LOGIN */
+
+input[type="text"],
+input[type="password"] {
+  padding: 10px;
+  border: 1px solid #999999;
+  border-radius: 4px;
+  font-size: 1rem;
+  width: 100%;
+  box-sizing: border-box;
+}
+
+button {
+  font-weight: bold;
+}
 
