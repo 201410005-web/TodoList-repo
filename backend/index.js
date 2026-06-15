@@ -1,7 +1,8 @@
-
 const express = require('express');
-const passport = require('./config/passport');
+const https = require('https');
+const fs = require('fs');
 
+const passport = require('./config/passport');
 const db = require('./database/db');
 
 const corsMiddleware = require('./middlewares/corsMiddleware');
@@ -14,6 +15,7 @@ const app = express();
 const PORT = 3000;
 
 // Middlewares
+
 app.use(express.json());
 
 app.use(passport.initialize());
@@ -46,12 +48,20 @@ app.use('/', authRoutes);
 
 app.use('/tasks', taskRoutes);
 
-// Servidor
+// HTTPS
 
-app.listen(PORT, () => {
+const options = {
+    key: fs.readFileSync('./key.pem'),
+    cert: fs.readFileSync('./cert.pem')
+};
+
+https.createServer(
+    options,
+    app
+).listen(PORT, () => {
 
     console.log(
-        `Servidor corriendo en http://localhost:${PORT}`
+        `Servidor HTTPS corriendo en https://localhost:${PORT}`
     );
 
 });
